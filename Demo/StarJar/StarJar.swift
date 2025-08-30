@@ -78,15 +78,18 @@ struct StarJar: View {
 class StarScene: SKScene {
 
   // MARK: - 设备运动检测
-  private let motionManager = CMMotionManager()
-  private var lastGravity = CGVector.zero
+  private let motionManager = CMMotionManager()  // 设备运动检测管理器
+  private var lastGravity = CGVector.zero  // 上一次重力
 
   // MARK: - 场景生命周期
+
+  // 执行时机：当SpriteKit场景被添加到SKView时调用
   override func didMove(to view: SKView) {
-    setupScene()
-    startDeviceMotionDetection()
+    setupScene()  // 设置场景
+    startDeviceMotionDetection()  // 启动设备运动检测
   }
 
+  // 执行时机：当SpriteKit场景被销毁时调用
   deinit {
     stopDeviceMotionDetection()
   }
@@ -102,7 +105,7 @@ class StarScene: SKScene {
     // 重力由设备姿态驱动（startDeviceMotionDetection 中实时更新）
     // physicsWorld.gravity = CGVector(dx: 0, dy: -6.0)
 
-    // 物理世界速度倍数（0.7 = 慢速模式）
+    // 物理世界速度倍数（0.7 = 慢速模式， 1 = 正常模式， 2 = 快速模式）
     physicsWorld.speed = 1
 
     // 创建屏幕边界物理体
@@ -125,6 +128,8 @@ class StarScene: SKScene {
         },
       ])
     )
+
+    // 启动定时检查动作，防止星星无休止微震动
     run(checkAction, withKey: "starStatusCheck")
   }
 
@@ -132,6 +137,7 @@ class StarScene: SKScene {
    * 检查星星状态，对接近静止的星星进行处理
    */
   func checkStarsStatus() {
+    // 获取所有星星
     let stars = children.filter { $0.name == "star" }
 
     for star in stars {
